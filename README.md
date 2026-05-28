@@ -21,13 +21,16 @@ TDD (Test Driven Development)
 
 ##  System Architecture
 
-```mermaid
-flowchart TD
-    A[Client (Trader)] --> B[Web API - Order Controller]
-    B --> C[Order Service Layer]
-    C --> D[OrderBook (In-Memory Engine)]
-    D --> E[Matching Engine]
-    E --> F[Trade Execution]
-    F --> G[WebSocket / SignalR]
-    G --> H[Client Updates]
-```
+Client (Trader)
+      ↓
+Web API (Order Controller)
+      ↓
+Order Service Layer
+      ↓
+OrderBook (In-Memory Engine)
+      ↓
+Matching Engine
+      ↓
+Trade Execution + Event Bus
+      ↓
+WebSocket / SignalR Clients
