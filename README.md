@@ -21,16 +21,4 @@ TDD (Test Driven Development)
 
 ##  System Architecture
 
-Client (Trader)
-      ↓
-Web API (Order Controller)
-      ↓
-Order Service Layer
-      ↓
-OrderBook (In-Memory Engine)
-      ↓
-Matching Engine
-      ↓
-Trade Execution + Event Bus
-      ↓
-WebSocket / SignalR Clients
+Client (Trader) > Web API (Order Controller) > Order Service Layer > OrderBook (In-Memory Engine) >  Matching Engine  > Trade Execution + Event Bus
