@@ -6,6 +6,16 @@
         Sell
     }
 
+    public enum OrderStatus
+    {
+        Pending,
+        Queued,
+        PartiallyFilled,
+        Filled,
+        Cancelled,
+        Rejected
+    }
+
     public class Order
     {
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -14,5 +24,10 @@
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+
+        //Order status
+        public OrderStatus Status { get; set; } = OrderStatus.Pending;
+        // Original quantity submitted
+        public int OriginalQuantity { get; set; }
     }
 }

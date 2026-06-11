@@ -54,5 +54,27 @@ namespace Stock_Trading_Simulation_API.Controllers
 
             return Ok(book.GetAllOrders());
         }
+
+        [HttpGet("status/{orderId}")]
+        public IActionResult GetOrderStatus(Guid orderId)
+        {
+            var book = (OrderBook)_orderBook;
+
+            var order = book.GetOrder(orderId);
+
+            if (order == null)
+                return NotFound("Order not found");
+
+            return Ok(new
+            {
+                order.Id,
+                order.Symbol,
+                order.Side,
+                order.Price,
+                order.Quantity,
+                order.Status,
+                order.Timestamp
+            });
+        }
     }
 }

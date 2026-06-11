@@ -16,9 +16,14 @@ namespace Stock_Trading_Simulation_API.Infrastrcuture
         public async Task AddOrderAsync(Order order)
         {
             await _lock.WaitAsync();
+
             try
             {
-                var book = order.Side == OrderSide.Buy ? _buyOrders : _sellOrders;
+                order.Status = OrderStatus.Queued;
+
+                var book = order.Side == OrderSide.Buy
+                    ? _buyOrders
+                    : _sellOrders;
 
                 if (!book.ContainsKey(order.Price))
                     book[order.Price] = new Queue<Order>();
@@ -29,6 +34,27 @@ namespace Stock_Trading_Simulation_API.Infrastrcuture
             {
                 _lock.Release();
             }
+        }
+
+        public Order? GetOrder(Guid orderId)
+        {
+            foreach (var level in _buyOrders.Values)
+            {
+                var order = level.FirstOrDefault(x => x.Id == orderId);
+
+                if (order != null)
+                    return order;
+            }
+
+            foreach (var level in _sellOrders.Values)
+            {
+                var order = level.FirstOrDefault(x => x.Id == orderId);
+
+                if (order != null)
+                    return order;
+            }
+
+            return null;
         }
 
         public bool HasMatch()
