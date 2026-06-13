@@ -9,37 +9,47 @@ namespace Stock_Trading_Simulation_API.Infrastrcuture
         private readonly ConcurrentQueue<Order> _incomingOrders = new();
         private readonly IMatchingEngine _matchingEngine;
         private readonly IOrderBook _orderBook;
-        private readonly SemaphoreSlim _semaphore = new(1, 1); // controls processing access
+        private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         public OrderProcessor(IMatchingEngine matchingEngine, IOrderBook orderBook)
         {
             _matchingEngine = matchingEngine;
             _orderBook = orderBook;
+
+            Console.WriteLine($"OrderProcessor CREATED: {this.GetHashCode()}");
         }
 
         // Enqueue new order
         public void EnqueueOrder(Order order)
         {
+            Console.WriteLine($"ENQUEUED: {order.Id} | Processor: {this.GetHashCode()}");
             _incomingOrders.Enqueue(order);
         }
 
-        // Process orders asynchronously
+        // Background consumer (THIS MUST BE CALLED BY EngineWorker)
         public async Task ProcessOrdersAsync(CancellationToken cancellationToken)
         {
+            Console.WriteLine($"PROCESS LOOP STARTED: {this.GetHashCode()}");
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 if (_incomingOrders.TryDequeue(out var order))
                 {
-                    // Ensure one thread accesses OrderBook at a time
-                    await _semaphore.WaitAsync();
+                    Console.WriteLine($"DEQUEUED: {order.Id}");
+
+                    await _semaphore.WaitAsync(cancellationToken);
+
                     try
                     {
                         await _orderBook.AddOrderAsync(order);
+                        Console.WriteLine($"ADDED TO ORDERBOOK: {order.Id}");
+
                         var trades = await _matchingEngine.MatchAsync();
 
-                        // Optional: broadcast trades or log
-                        if (trades.Any())
-                            Console.WriteLine($"Processed {trades.Count} trades for {order.Symbol}");
+                        if (trades != null && trades.Count > 0)
+                        {
+                            Console.WriteLine($"TRADES: {trades.Count} for {order.Symbol}");
+                        }
                     }
                     finally
                     {
@@ -48,7 +58,7 @@ namespace Stock_Trading_Simulation_API.Infrastrcuture
                 }
                 else
                 {
-                    await Task.Delay(1); // avoid CPU spin
+                    await Task.Delay(50, cancellationToken);
                 }
             }
         }

@@ -1,18 +1,22 @@
-﻿namespace Stock_Trading_Simulation_API.Infrastrcuture
+﻿using Stock_Trading_Simulation_API.Infrastrcuture;
+
+namespace Stock_Trading_Simulation_API.Infrastrcuture
 {
     public class EngineWorker: BackgroundService
     {
-        private readonly MatchingEngine _engine;
-        public EngineWorker(MatchingEngine engine)
+        private readonly OrderProcessor _processor;
+        public EngineWorker(OrderProcessor processor)
         {
-            _engine = engine;
+            Console.WriteLine("EngineWorker CREATED");
+            _processor = processor;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("🚀 Matching Engine Started");
+            Console.WriteLine(" Order Processor Started");
 
-            await _engine.Run(stoppingToken);
+            await _processor.ProcessOrdersAsync(stoppingToken);
         }
     }
 }
+

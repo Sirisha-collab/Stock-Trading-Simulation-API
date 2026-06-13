@@ -29,6 +29,9 @@ namespace Stock_Trading_Simulation_API.Infrastrcuture
                     book[order.Price] = new Queue<Order>();
 
                 book[order.Price].Enqueue(order);
+
+                Console.WriteLine(
+                    $"OrderBook Added: {order.Symbol} Qty:{order.Quantity}");
             }
             finally
             {

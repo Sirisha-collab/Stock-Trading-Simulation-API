@@ -13,5 +13,7 @@ namespace Stock_Trading_Simulation_API.Application
         void RemoveBestSell();
         List<Order> GetAllOrders();
 
+        Order? GetOrder(Guid id);
+
     }
 }

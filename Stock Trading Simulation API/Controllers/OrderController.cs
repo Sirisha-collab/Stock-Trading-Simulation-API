@@ -14,31 +14,28 @@ namespace Stock_Trading_Simulation_API.Controllers
         private readonly IMatchingEngine _engine;
         private readonly OrderProcessor _processor;
 
-        private readonly OrderQueue _queue;
-
-        public OrderController(IOrderBook orderBook, IMatchingEngine engine, OrderProcessor processor, OrderQueue queue)
+        public OrderController(IOrderBook orderBook, IMatchingEngine engine, OrderProcessor processor)
         {
             _orderBook = orderBook;
             _engine = engine;
             _processor = processor; 
-            _queue = queue;
         }
-        [HttpPost("placeorder")]
-        public async Task<IActionResult> PlaceOrder(Order order)
-        {
-            //await _orderBook.AddOrderAsync(order);
-            //var trades = await _engine.MatchAsync();
-            //return Ok(trades);
-            await _queue.Enqueue(order);
-            Console.WriteLine($"Order queued {order.Id}");
-            return Ok("Order received and queued");
 
-        }
-        [HttpPost("replaceorder")]
-        public IActionResult ReplaceOrder(Order order)
+        [HttpPost("placeorder")]
+        public IActionResult PlaceOrder([FromBody] Order order)
         {
-            _processor.EnqueueOrder(order); // enqueue order
-            return Accepted("Order enqueued and will be processed asynchronously");
+            if (order == null)
+                return BadRequest("Invalid order payload");
+
+            _processor.EnqueueOrder(order);
+
+            Console.WriteLine($"Order queued {order.Id}");
+
+            return Accepted(new
+            {
+                Message = "Order received and queued",
+                OrderId = order.Id
+            });
         }
 
         [HttpGet("index")]

@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Stock_Trading_Simulation_API.Infrastrcuture;
+﻿using Microsoft.AspNetCore.Mvc;
+using Stock_Trading_Simulation_API.Application;
 
 namespace Stock_Trading_Simulation_API.Controllers
 {
@@ -8,18 +7,17 @@ namespace Stock_Trading_Simulation_API.Controllers
     [ApiController]
     public class OrdersViewController : ControllerBase
     {
-        private readonly MatchingEngine _engine;
+        private readonly IOrderBook _orderBook;
 
-        public OrdersViewController(MatchingEngine engine)
+        public OrdersViewController(IOrderBook orderBook)
         {
-            _engine = engine;
+            _orderBook = orderBook;
         }
 
         [HttpGet("all")]
         public IActionResult GetAllOrders()
         {
-            // Returns every submitted order (processed or not)
-            return Ok(_engine.AllOrders);
+            return Ok(_orderBook.GetAllOrders());
         }
     }
 }
