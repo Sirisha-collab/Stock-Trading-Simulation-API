@@ -34,58 +34,6 @@ namespace Stock_Trading_Simulation_API.Controllers
             return Ok(stocks);
         }
 
-        [HttpGet("{symbol}")]
-        public IActionResult GetStock(string symbol)
-        {
-            var orders = _orderBook.GetAllOrders()
-                .Where(o => o.Symbol.Equals(
-                    symbol,
-                    StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            if (!orders.Any())
-                return NotFound();
-
-            var latest = orders
-                .OrderByDescending(o => o.Timestamp)
-                .First();
-
-            return Ok(new
-            {
-                Symbol = latest.Symbol,
-                CurrentPrice = latest.Price,
-                TotalOrders = orders.Count
-            });
-        }
-
-        [HttpGet("{symbol}/orderbook")]
-        public IActionResult GetOrderBook(string symbol)
-        {
-            var orders = _orderBook.GetAllOrders()
-                .Where(o => o.Symbol.Equals(
-                    symbol,
-                    StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            if (!orders.Any())
-                return NotFound();
-
-            return Ok(new
-            {
-                Symbol = symbol.ToUpper(),
-
-                BuyOrders = orders
-                    .Where(o => o.Side == OrderSide.Buy)
-                    .OrderByDescending(o => o.Price)
-                    .ThenBy(o => o.Timestamp),
-
-                SellOrders = orders
-                    .Where(o => o.Side == OrderSide.Sell)
-                    .OrderBy(o => o.Price)
-                    .ThenBy(o => o.Timestamp)
-            });
-        }
-
         [HttpGet("dashboard")]
         public IActionResult GetDashboard()
         {
