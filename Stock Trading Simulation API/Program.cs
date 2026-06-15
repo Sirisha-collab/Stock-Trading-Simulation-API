@@ -18,6 +18,8 @@ builder.Services.AddSingleton<OrderProcessor>();
 // Background worker
 builder.Services.AddHostedService<EngineWorker>();
 
+builder.Services.AddControllersWithViews();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -30,5 +32,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Stocks}/{action=Index}/{id?}");
 
 app.Run();

@@ -124,17 +124,5 @@ namespace Stock_Trading_Simulation_API.Controllers
 
             return Ok(result);
         }
-
-        [HttpGet("debug")]
-        public IActionResult Debug()
-        {
-            var orders = _orderBook.GetAllOrders();
-
-            return Ok(new
-            {
-                Count = orders.Count,
-                Orders = orders
-            });
-        }
     }
 }
